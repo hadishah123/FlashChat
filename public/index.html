@@ -9,7 +9,11 @@
     ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 6px; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-blue-500 to-pink-500 min-h-screen flex items-center justify-center font-sans p-4">
+<body class=" min-h-screen flex items-center justify-center font-sans p-4">
+  <video autoplay muted loop class="fixed  top-0 left-0 w-full h-full object-cover z-[-1]">
+    <source src="/assets/bg.mp4" type="video/mp4" />
+    Your browser does not support HTML5 video.
+  </video>
   <div class="bg-white shadow-xl rounded-2xl p-4 sm:p-6 w-full max-w-md flex flex-col">
     <h2 class="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-blue-500 to-pink-500 text-transparent bg-clip-text">
       FlashChat ⚡
@@ -28,7 +32,7 @@
     </div>
 
     <!-- Chat Section -->
-    <div id="chat" class="hidden flex flex-col h-[60vh] mt-4">
+    <div id="chat" class="hidden flex flex-col h-[80vh] mt-4">
       <h3 id="roomTitle" class="text-lg font-semibold text-center mb-2 text-blue-700"></h3>
       <ul id="messages"
           class="flex-1 overflow-y-auto bg-gray-50 border rounded-lg p-3 space-y-2 text-sm sm:text-base"></ul>
