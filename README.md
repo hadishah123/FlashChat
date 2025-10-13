@@ -5,6 +5,9 @@ No sign-up, no history — just quick, private conversations that disappear when
 
 ---
 
+## 📸 Preview
+![Chatting Screenshot](public/assets/screenshot.webp)
+
 ## 🚀 Features
 
 - 💬 **Real-time messaging** with Socket.IO  
@@ -30,9 +33,14 @@ No sign-up, no history — just quick, private conversations that disappear when
 ```
 flashChat/
 │
+├── package.json
+├── package-lock.json
 ├── server.js # Express + Socket.IO backend
 └── public/
-└── index.html # Frontend UI
+      └── index.html # Frontend UI
+      └── assets/
+            └── bg.mp4
+            └── screenshot.webp
 ```
 
 ---
