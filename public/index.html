@@ -36,7 +36,7 @@
       <h3 id="roomTitle" class="text-lg font-semibold text-center mb-2 text-blue-700"></h3>
       <ul id="messages"
           class="flex-1 overflow-y-auto bg-gray-50 border rounded-lg p-3 space-y-2 text-sm sm:text-base"></ul>
-
+      <div id="typing-status" class="text-xs text-gray-500 mt-1"></div>
       <div class="flex mt-3 gap-2">
         <input id="messageInput" placeholder="Type a message..."
                class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base" />
@@ -59,10 +59,33 @@
     const roomTitle = document.getElementById("roomTitle");
     const messages = document.getElementById("messages");
     const msgInput = document.getElementById("messageInput");
+    const typingStatus = document.getElementById('typing-status');
     const sendBtn = document.getElementById("sendBtn");
 
     let playerName = "";
     let gameId = "";
+    let typing = false;
+    let timeout;
+
+    msgInput.addEventListener('input', () => {
+      if (!typing) {
+        typing = true;
+        socket.emit('typing', playerName);
+      }
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        typing = false;
+        socket.emit('stop typing', playerName);
+      }, 1000); // stop typing if no input for 1 sec
+    });
+
+    socket.on('typing', (nameInput) => {
+        typingStatus.textContent = `${nameInput} is typing...`;
+    });
+
+    socket.on('stop typing', (user) => {
+        typingStatus.textContent = '';
+    });
 
     joinBtn.onclick = () => {
       playerName = nameInput.value.trim();

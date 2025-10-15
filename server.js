@@ -23,6 +23,20 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on('typing', (nameInput) => {
+    const player = players[socket.id];
+    if (player) {
+      socket.to(player.gameId).emit('typing', nameInput);
+    }
+  });
+
+  socket.on('stop typing', (nameInput) => {
+    const player = players[socket.id];
+    if (player) {
+      socket.to(player.gameId).emit('stop typing', nameInput);
+    }
+  });
+
   socket.on("chat_message", ({ gameId, name, message }) => {
     io.to(gameId).emit("chat_message", { name, message });
   });
