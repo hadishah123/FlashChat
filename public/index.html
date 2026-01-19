@@ -2,18 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FlashChat ⚡</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #a1a1aa; border-radius: 6px; }
   </style>
 </head>
-<body class=" min-h-screen flex items-center justify-center font-sans p-4">
-  <video autoplay muted loop class="fixed  top-0 left-0 w-full h-full object-cover z-[-1]">
-    <source src="/assets/bg.mp4" type="video/mp4" />
-    Your browser does not support HTML5 video.
-  </video>
+
+<body class="min-h-[100svh] flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 font-sans p-3 sm:p-4">
+
   <div class="bg-white shadow-xl rounded-2xl p-4 sm:p-6 w-full max-w-md flex flex-col">
     <h2 class="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-blue-500 to-pink-500 text-transparent bg-clip-text">
       FlashChat ⚡
@@ -22,26 +23,32 @@
     <!-- Join Section -->
     <div id="joinSection" class="space-y-3 text-center">
       <input id="playerName" placeholder="Enter Your Name"
-             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base" />
+             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base" />
+
       <input id="gameId" placeholder="Enter Room ID"
-             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base" />
+             class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base" />
+
       <button id="joinBtn"
-              class="w-full text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg text-sm sm:text-base px-5 py-2.5 transition ease-in-out">
+              class="w-full text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 font-medium rounded-lg px-5 py-2.5 transition">
         Join Room
       </button>
     </div>
 
     <!-- Chat Section -->
-    <div id="chat" class="hidden flex flex-col h-[80vh] mt-4">
+    <div id="chat" class="hidden flex flex-col mt-4 h-[70svh] sm:h-[60vh]">
       <h3 id="roomTitle" class="text-lg font-semibold text-center mb-2 text-blue-700"></h3>
+
       <ul id="messages"
-          class="flex-1 overflow-y-auto bg-gray-50 border rounded-lg p-3 space-y-2 text-sm sm:text-base"></ul>
+          class="flex-1 overflow-y-auto bg-gray-50 border rounded-lg p-3 space-y-2 text-base"></ul>
+
       <div id="typing-status" class="text-xs text-gray-500 mt-1"></div>
+
       <div class="flex mt-3 gap-2">
         <input id="messageInput" placeholder="Type a message..."
-               class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base" />
+               class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base" />
+
         <button id="sendBtn"
-                class="bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm sm:text-base">
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
           Send
         </button>
       </div>
@@ -49,6 +56,7 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
+
   <script>
     const socket = io();
     const nameInput = document.getElementById("playerName");
@@ -59,7 +67,7 @@
     const roomTitle = document.getElementById("roomTitle");
     const messages = document.getElementById("messages");
     const msgInput = document.getElementById("messageInput");
-    const typingStatus = document.getElementById('typing-status');
+    const typingStatus = document.getElementById("typing-status");
     const sendBtn = document.getElementById("sendBtn");
 
     let playerName = "";
@@ -67,24 +75,24 @@
     let typing = false;
     let timeout;
 
-    msgInput.addEventListener('input', () => {
+    msgInput.addEventListener("input", () => {
       if (!typing) {
         typing = true;
-        socket.emit('typing', playerName);
+        socket.emit("typing", { gameId, name: playerName });
       }
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         typing = false;
-        socket.emit('stop typing', playerName);
-      }, 1000); // stop typing if no input for 1 sec
+        socket.emit("stop typing", { gameId, name: playerName });
+      }, 1000);
     });
 
-    socket.on('typing', (nameInput) => {
-        typingStatus.textContent = `${nameInput} is typing...`;
+    socket.on("typing", ({ name }) => {
+      typingStatus.textContent = `${name} is typing...`;
     });
 
-    socket.on('stop typing', (user) => {
-        typingStatus.textContent = '';
+    socket.on("stop typing", () => {
+      typingStatus.textContent = "";
     });
 
     joinBtn.onclick = () => {
@@ -96,6 +104,7 @@
       roomTitle.textContent = `Room: ${gameId}`;
       joinSection.classList.add("hidden");
       chatDiv.classList.remove("hidden");
+      msgInput.focus();
     };
 
     sendBtn.onclick = sendMessage;
@@ -112,6 +121,7 @@
 
     socket.on("chat_message", ({ name, message }) => {
       const li = document.createElement("li");
+
       if (name === "System") {
         li.className = "text-gray-500 italic text-center";
         li.textContent = message;
@@ -125,7 +135,13 @@
 
       messages.appendChild(li);
       messages.scrollTop = messages.scrollHeight;
+
+      // prevent infinite DOM growth
+      if (messages.children.length > 200) {
+        messages.removeChild(messages.firstChild);
+      }
     });
   </script>
+
 </body>
 </html>
